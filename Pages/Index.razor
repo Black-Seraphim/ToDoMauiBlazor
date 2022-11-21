@@ -1,69 +1,246 @@
 ﻿@page "/"
+@using ToDoMauiBlazor.Tools;
 
 @if (ToDoLists == null)
 {
-	<p><em>no data</em></p>
+    <p><em>no data</em></p>
 }
 else
 {
-    <div class="content">
-        <div class="list column">
-            <h3>Listen</h3>
+    <!-- List Section -->
+    <section>
+        <header>Listen</header>
+        <main class="main-lists">
+            <table>
+                <tbody>
+                    @if (ToDoLists is not null)
+                    {
+                        @if (ToDoLists.Any())
+                        {
+                            @foreach (var list in ToDoLists)
+                            {
+                                <tr class="@((list.Selected) ? "row-selected" : "")" @onclick="@(() => RowList_OnClick(list))" @ondblclick="@(() => RowList_OnDoubleClick(list))">
+                                    <td>@list.Name</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr class="row-dummy">
+                                <td>Füge Deine erste Liste hinzu</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </main>
+        <footer>
+            <button @onclick="ButtonAddList_OnClick">Hinzufügen</button>
+            <button disabled="@ListIsNotSelected" @onclick="ButtonDeleteList_OnClick">Entfernen</button>
+            <button disabled="@ListIsNotSelected" @onclick="ButtonUpdateList_OnClick">Umbenennen</button>
+        </footer>
+    </section>
 
-            <textarea rows="16" cols="20"></textarea>
-            
-            <button type="button" class="button">
-                <h4>Hinzufügen</h4>
-            </button>
-            <button type="button" class="button">
-                <h4>Entfernen</h4>
-            </button>
-            <button type="button" class="button">
-                <h4>Umbenennen</h4>
-            </button>
-        </div>
-        <div class="task column">
-            <h2>Aufgaben</h2>
-            <textarea rows="16" cols="20"></textarea>
-            <button type="button" class="button">
-                <h4>Hinzufügen</h4>
-            </button>
-            <button type="button" class="button">
-                <h4>Entfernen</h4>
-            </button>
-            <button type="button" class="button">
-                <h4>Erledigt anzeigen</h4>
-                <label class="container">
-                    <input type="checkbox" checked="checked">
-                    <span class="checkmark"></span>
-                </label>
-            </button>
-        </div>
-        <div class="details column">
-            <h3>Beschreibung</h3>
-            <div class="title">
-                <h3>Name</h3>
-            </div>
-            <textarea rows="1" cols="20"></textarea>
-            <div class="title">
-                <h3>Notiz</h3>
-            </div>
-            <textarea rows="16" cols="20"></textarea>
-            <div class="checkbox-area">
-                <h5>Letzte Änderung: 2.17.2022 5:13</h5>
-                <label class="container">
-                    Erledigt
-                    <input type="checkbox" checked="checked">
-                    <span class="checkmark"></span>
-                </label>
-            </div>
-            <button type="button" class="button">
-                <h4>Änderung übernehmen</h4>
-            </button>
+    <!-- Add List Popup -->
+    <div class="popup-background @DisplayListAddPopup">
+        <div class="popup popup-list-add">
+            <header>
+                <label>Liste hinzufügen</label>
+                <div @onclick="ButtonAddListClose_OnClick">&times;</div>
+            </header>
+            <main>
+                @if (NewToDoList is not null)
+                {
+                    <input type="text" @bind="NewToDoList.Name" @onkeyup="@InputAddList_OnKeyUp">
+                }
+            </main>
+            <footer>
+                <button class="button-abort" @onclick="ButtonAddListAbort_OnClick">Abbrechen</button>
+                <button class="button-ok" @onclick="ButtonAddListOk_OnClick">OK</button>
+            </footer>
         </div>
     </div>
 
-	
+    <!-- Delete List Popup -->
+    <div class="popup-background @DisplayListDeletePopup">
+        <div class="popup popup-list-delete">
+            <header>
+                <label>Liste wirklich entfernen?</label>
+                <div @onclick="ButtonDeleteListClose_OnClick">&times;</div>
+            </header>
+            <main>
+                Wollen sie die ausgewählte Liste wirklich entfernen? <br>
+                Sämtlicher Inhalt geht unwiederruflich verloren!
+            </main>
+            <footer>
+                <button class="button-abort" @onclick="ButtonDeleteListAbort_OnClick">Abbrechen</button>
+                <button class="button-ok" @onclick="ButtonDeleteListOk_OnClick">OK</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Update List Popup -->
+    <div class="popup-background @DisplayListUpdatePopup">
+        <div class="popup popup-list-update">
+            <header>
+                <label>Liste umbenennen</label>
+                <div @onclick="ButtonUpdateListClose_OnClick">&times;</div>
+            </header>
+            <main>
+                @if (SelectedToDoList is not null)
+                {
+                    <input @bind="UpdatedListName" @onkeyup="@InputUpdateList_OnKeyUp">
+                }
+            </main>
+            <footer>
+                <button class="button-abort" @onclick="ButtonUpdateListAbort_OnClick">Abbrechen</button>
+                <button class="button-ok" @onclick="ButtonUpdateListOk_OnClick">OK</button>
+            </footer>
+        </div>
+    </div>
+
+
+
+    <!-- Task Section -->
+    <section>
+        <header>Aufgaben</header>
+        <main class="main-tasks">
+            <table>
+                <tbody>
+                    @if (ToDoTasks is not null)
+                    {
+                        if (ToDoTasks.Any())
+                        {
+                            @foreach (var task in ToDoTasks)
+                            {
+                                @if (ShowFinished || !task.Finished && !ShowFinished)
+                                {
+                                    <tr class="@((task.Selected) ? "row-selected" : "") @((task.Finished && ShowFinished) ? "row-finished" : "")" @onclick="@(() => RowTask_OnClick(task))">
+                                        <td>@task.Name</td>
+                                    </tr>
+                                }
+                            }
+                        }
+                        else
+                        {
+                            <tr class="row-dummy">
+                                <td>Füge Deine erste Aufgabe hinzu</td>
+                            </tr>
+                        }
+
+                    }
+                    else
+                    {
+                        <tr class="row-dummy">
+                            <td>Wähle eine Liste aus um eine Aufgabe zu erstellen.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </main>
+        <footer>
+            <button disabled="@ListIsNotSelected" @onclick="ButtonAddTask_OnClick">Hinzufügen</button>
+            <button disabled="@TaskIsNotSelected" @onclick="ButtonDeleteTask_OnClick">Entfernen</button>
+            <label class="checkbox-container">
+                <input id="show-finished" type="checkbox" @bind="ShowFinished">
+                <span class="checkbox-checkmark"></span>
+                <label for="show-finished">Erledigte anzeigen</label>
+            </label>
+        </footer>
+    </section>
+
+    <!-- Add Task Popup -->
+    <div class="popup-background @DisplayTaskAddPopup">
+        <div class="popup popup-task-add">
+            <header>
+                <label>Aufgabe hinzufügen</label>
+                <div @onclick="ButtonAddTaskClose_OnClick">&times;</div>
+            </header>
+            <main>
+                @if (NewToDoTask is not null)
+                {
+                    <input @bind="NewToDoTask.Name" @onkeyup="@InputAddTask_OnKeyUp">
+                }
+            </main>
+            <footer>
+                <button class="button-abort" @onclick="ButtonAddTaskAbort_OnClick">Abbrechen</button>
+                <button class="button-ok" @onclick="ButtonAddTaskOk_OnClick">OK</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Delete Task Popup -->
+    <div class="popup-background @DisplayTaskDeletePopup">
+        <div class="popup popup-task-delete">
+            <header>
+                <label>Aufgabe wirklich entfernen?</label>
+                <div @onclick="ButtonDeleteTaskClose_OnClick">&times;</div>
+            </header>
+            <main>
+                Wollen sie die ausgewählte Aufgabe wirklich entfernen? <br>
+                Sämtlicher Inhalt geht unwiederruflich verloren!
+            </main>
+            <footer>
+                <button class="button-abort" @onclick="ButtonDeleteTaskAbort_OnClick">Abbrechen</button>
+                <button class="button-ok" @onclick="ButtonDeleteTaskOk_OnClick">OK</button>
+            </footer>
+        </div>
+    </div>
+
+
+
+    <!-- Description Section -->
+    <section>
+        <header>Beschreibung</header>
+        <main class="main-description">
+            <label class="input-label">Name</label>
+            @if (NewToDoTask is not null)
+            {
+                <input class="input-description" @bind="NewToDoTask.Name" @onkeyup="@InputUpdateTaskName_OnKeyUp">
+            }
+            else
+            {
+                <input class="input-description" disabled>
+            }
+
+            <label class="input-label">Notiz</label>
+            @if (NewToDoTask is not null)
+            {
+                <textarea @bind="NewToDoTask.Description"></textarea>
+            }
+            else
+            {
+                <textarea disabled></textarea>
+            }
+
+            <div class="dingens">
+                <label class="checkbox-container">
+                    @if (NewToDoTask is not null)
+                    {
+                        <input id="task-finished" type="checkbox" @bind="NewToDoTask.Finished">
+                    }
+                    else
+                    {
+                        <input id="task-finished" type="checkbox" disabled>
+                    }
+                    <span class="checkbox-checkmark"></span>
+                    <label for="task-finished">Erledigt</label>
+                </label>
+                @if (NewToDoTask is not null)
+                {
+                    <label class="date-label">@NewToDoTask.LastChanged.ToDateTimeString()</label>
+                }
+            </div>
+
+        </main>
+        <footer>
+            <button disabled="@TaskIsNotSelected" @onclick="ButtonUpdateTask_OnClick">Änderungen übernehmen</button>
+        </footer>
+    </section>
+
 
 }
-	
+
+@code {
+
+}

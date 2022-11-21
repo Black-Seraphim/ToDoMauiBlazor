@@ -1,0 +1,40 @@
+﻿section {
+    display: block;
+    float: left;
+    padding-bottom: 10px;
+    padding-right: 5px;
+    padding-left: 5px;
+}
+
+header {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--header-font-color);
+}
+
+.main-lists {
+    height: 400px;
+    width: 250px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background-color: var(--table-bg-color);
+}
+
+.main-tasks {
+    height: 400px;
+    width: 400px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background-color: var(--table-bg-color);
+}
+
+.main-description {
+    height: 400px;
+    width: 400px;
+}
+
+
+footer {
+    padding-top: 5px;
+}
+

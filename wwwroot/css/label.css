@@ -1,0 +1,20 @@
+﻿label {
+    color: var(--label-font-color);
+    display: block;
+}
+
+.input-label {
+    float: none;
+    font-weight: 600;
+    font-size: 12px;
+    width: 100%;
+}
+
+.date-label {
+    font-weight: 300;
+    font-size: 9px;
+    float: right;
+    display: block;
+    margin-right: 5px;
+    margin-top: 5px;
+}

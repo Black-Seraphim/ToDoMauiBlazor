@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Components.WebView.Maui;
-using ToDoMauiBlazor.Data;
-using Microsoft.Extensions.DependencyInjection;
+﻿using ToDoMauiBlazor.Data;
 using ToDoMauiBlazor.Services;
 
 namespace ToDoMauiBlazor;
@@ -24,8 +22,7 @@ public static class MauiProgram
 
         builder.Services.AddDbContext<ToDoContext>();
 
-        builder.Services.AddScoped<ToDoListService>();
-        builder.Services.AddScoped<ToDoTaskService>();
+        builder.Services.AddScoped<ToDoService>();
 
         return builder.Build();
     }

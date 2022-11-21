@@ -7,5 +7,6 @@
         public string Description { get; set; } = string.Empty;
         public DateTime LastChanged { get; set; }
         public bool Finished { get; set; }
+        public bool Selected { get; set; } = false;
     }
 }

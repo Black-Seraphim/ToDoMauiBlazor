@@ -1,0 +1,119 @@
+﻿/* popup */
+.popup-background {
+    position: fixed;
+    z-index: 1; /* Sit on top */
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    background-color: var(--popup-fog-color); /* Black w/ opacity */
+    display: flex;
+    align-items: center; /* vertical */
+    justify-content: center; /* horizontal */
+}
+
+.popup header {
+    background-color: var(--popup-header-bg-color);
+    color: var(--popup-header-font-color);
+    height: 30px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 5px;
+    padding-bottom: 2px;
+}
+
+    .popup header label {
+        float: left;
+    }
+
+    .popup header div {
+        color: var(--popup-header-font-color);
+        font-size: 25px;
+        font-weight: bold;
+        margin-top: -3px;
+        float: right;
+    }
+
+        .popup header div:hover,
+        .popup header div:focus {
+            color: var(--popup-header-font-color-hover);
+            text-decoration: none;
+            cursor: default;
+        }
+
+.popup main {
+    background-color: var(--popup-bg-color);
+    color: var(--popup-font-color);
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+    .popup main input {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 400;
+        font-style: normal;
+        font-size: 17px;
+        border: 0px;
+        height: 30px;
+    }
+
+        .popup main input:focus-visible {
+            border: 0px;
+            outline: none;
+        }
+
+.popup footer {
+    background-color: var(--popup-bg-color);
+    height: 30px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 0px;
+    padding-bottom: 10px;
+}
+
+
+/* list add popup */
+.popup-list-add main {
+    height: 30px;
+}
+
+.popup-list-add input {
+    width: 240px;
+}
+
+/* list delete popup */
+.popup-list-delete main {
+    height: 50px;
+}
+
+/* list update popup */
+.popup-list-update main {
+    height: 30px;
+}
+
+.popup-list-update input {
+    width: 240px;
+}
+
+/* task add popup */
+.popup-task-add main {
+    height: 30px;
+}
+
+.popup-task-add input {
+    width: 390px;
+}
+
+/* task delete popup */
+.popup-task-delete main {
+    height: 50px;
+}
+
+/* display classes as work-around because blazor could not manipulate css */
+.display-on {
+    display: flex;
+}
+
+.display-off {
+    display: none;
+}

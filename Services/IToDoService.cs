@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ToDoMauiBlazor.Model;
+﻿using ToDoMauiBlazor.Model;
 
 namespace ToDoMauiBlazor.Services
 {
-	public interface IToDoService<T>
-	{
-        Task<int> Create(T item);
-        Task<IEnumerable<T?>?> ReadAll();
-        Task<T?> Read(int id);
-        Task<int> Update(T item);
-		Task<int> Delete(int id);
-	}
+    public interface IToDoService
+    {
+        public ToDoList? CreateList(ToDoList? toDoList);
+        public bool DeleteList(ToDoList? toDoList);
+        public List<ToDoList> ReadAllLists();
+        public ToDoList? UpdateList(ToDoList? toDoList);
+        public bool DeleteTask(ToDoTask? toDoTask);
+    }
 }

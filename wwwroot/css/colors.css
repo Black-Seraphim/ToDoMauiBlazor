@@ -1,0 +1,29 @@
+﻿:root {
+    --main-bg-color: #333333;
+    --btn-bg-color: #ffffff;
+    --btn-bg-color-hover: #05416c;
+    --btn-font-color: #000000;
+    --btn-font-color-hover: #ffffff;
+    --btn-font-color-disabled: #dddddd;
+    --header-font-color: #dddddd;
+    --table-bg-color: #ffffff;
+    --table-row-bg-color-hover: #05416c;
+    --table-row-bg-color-select: #05416c;
+    --table-row-font-color-hover: #ffffff;
+    --table-row-font-color-select: #ffffff;
+    --table-row-font-color-finished: #aaaaaa;
+    --table-row-font-color-dummy: #aaaaaa;
+    --checkbox-bg-color: #ffffff;
+    --checkbox-bg-color-hover: #05416c;
+    --checkbox-bg-color-checked: #ffffff;
+    --checkbox-bg-color-disabled: #efefef4d;
+    --checkbox-checkmark-color: #000000;
+    --checkbox-checkmark-color-hover: #ffffff;
+    --label-font-color: #dddddd;
+    --popup-fog-color: rgba(0,0,0,0.4);
+    --popup-header-bg-color: #05416c;
+    --popup-header-font-color: #ffffff;
+    --popup-header-font-color-hover: #000000;
+    --popup-bg-color: #333333;
+    --popup-font-color: #ffffff;
+}

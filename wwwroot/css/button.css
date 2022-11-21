@@ -1,0 +1,43 @@
+﻿button {
+    background-color: var(--btn-bg-color);
+    color: var(--btn-font-color);
+    font-weight: 600;
+    font-size: 13px;
+    display: block;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    border-style: solid;
+    border-width: 0px;
+    height: 30px;
+    margin-top: 5px;
+    width: 100%;
+}
+
+    button:hover {
+        background-color: var(--btn-bg-color-hover);
+        color: var(--btn-font-color-hover);
+    }
+
+    button:disabled {
+        background-color: var(--btn-bg-color);
+        color: var(--btn-font-color-disabled);
+        font-style: italic;
+    }
+
+        button:disabled:hover {
+            background-color: var(--btn-bg-color);
+            font-style: italic;
+        }
+
+.button-abort {
+    float: left;
+    width: 90px;
+    margin: 0px;
+}
+
+.button-ok {
+    float: right;
+    width: 50px;
+    margin: 0px;
+}

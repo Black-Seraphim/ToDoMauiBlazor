@@ -1,0 +1,45 @@
+﻿table {
+    width: 100%;
+}
+
+tbody {
+    overflow: auto;
+    vertical-align: top;
+    display: table;
+    width: 100%;
+}
+
+tr {
+    height: 30px;
+}
+
+    tr:hover {
+        background-color: var(--table-row-bg-color-hover);
+        color: var(--table-row-font-color-hover);
+    }
+
+.row-selected {
+    background-color: var(--table-row-bg-color-select);
+    color: var(--table-row-font-color-select);
+}
+
+.row-finished {
+    font-style: italic;
+    color: var(--table-row-font-color-finished);
+    text-decoration: line-through;
+}
+
+td {
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 3px;
+}
+
+.row-dummy {
+    color: var(--table-row-font-color-dummy);
+}
+
+    .row-dummy:hover {
+        color: var(--table-row-font-color-dummy);
+        background-color: var(--table-bg-color);
+    }
