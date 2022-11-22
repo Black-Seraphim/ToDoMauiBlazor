@@ -1,6 +1,7 @@
 # ToDoMauiBlazor
 
-## DescriptionJust another version of my previious build ToDo-App.
+## Description
+Just another version of my previious build ToDo-App.
 This time I created it in Blazor using MAUI to work like an app.
 
 The whole code is written in C#. The UI is created using HTML and CSS. No JS is needed.
