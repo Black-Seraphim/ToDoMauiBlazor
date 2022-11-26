@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
 using ToDoMauiBlazor.Data;
 using ToDoMauiBlazor.Model;
 using ToDoMauiBlazor.Services;
@@ -8,19 +10,26 @@ namespace ToDoMauiBlazor.Pages
 {
     public partial class Index
     {
+        //private protected ToDoService _toDoService;
+
         private bool showFinished = false;
 
         [Inject]
 #pragma warning disable CS8618 // Ein Non-Nullable-Feld muss beim Beenden des Konstruktors einen Wert ungleich NULL enthalten. Erwägen Sie die Deklaration als Nullable.
-        private ToDoService ToDoService { get; set; }
+        public IToDoService ToDoService { get; set; }
 #pragma warning restore CS8618 // Ein Non-Nullable-Feld muss beim Beenden des Konstruktors einen Wert ungleich NULL enthalten. Erwägen Sie die Deklaration als Nullable.
         private List<ToDoList>? ToDoLists { get; set; }
         private List<ToDoTask>? ToDoTasks { get; set; }
         private string DisplayListAddPopup { get; set; } = "display-off";
+        public bool ListAddPopupIsActive { get; set; } = false;
         private string DisplayListUpdatePopup { get; set; } = "display-off";
+        public bool ListUpdatePopupIsActive { get; set; } = false;
         private string DisplayListDeletePopup { get; set; } = "display-off";
+        public bool ListDeletePopupIsActive { get; set; } = false;
         private string DisplayTaskAddPopup { get; set; } = "display-off";
+        public bool TaskAddPopupIsActive { get; set; } = false;
         private string DisplayTaskDeletePopup { get; set; } = "display-off";
+        public bool TaskDeletePopupIsActive { get; set; } = false;
         private bool ShowFinished { get => showFinished; set => ShowFinished_OnPropertyChanged(value); }
         public bool ListIsNotSelected { get; set; } = true;
         public bool TaskIsNotSelected { get; set; } = true;
@@ -30,10 +39,40 @@ namespace ToDoMauiBlazor.Pages
         public ToDoTask? SelectedToDoTask { get; set; }
         public ToDoTask? NewToDoTask { get; set; }
 
+        InputText? inputTextAddList;
+        InputText? inputTextUpdateList;
+        InputText? inputTextAddTask;
+
         protected override void OnInitialized()
         {
             RefreshLists();
             SelectList(null);
+        }
+
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            await SetFocusAsync();
+            await base.OnAfterRenderAsync(firstRender);
+        }
+
+        /// <summary>
+        /// Set focus to input field if a popup is open.
+        /// </summary>
+        /// <returns></returns>
+        async Task SetFocusAsync()
+        {
+            if (inputTextAddList?.Element is not null && ListAddPopupIsActive)
+            {
+                await inputTextAddList.Element.Value.FocusAsync();
+            }
+            if (inputTextUpdateList?.Element is not null && ListUpdatePopupIsActive)
+            {
+                await inputTextUpdateList.Element.Value.FocusAsync();
+            }
+            if (inputTextAddTask?.Element is not null && TaskAddPopupIsActive)
+            {
+                await inputTextAddTask.Element.Value.FocusAsync();
+            }
         }
 
         /// <summary>
@@ -64,10 +103,8 @@ namespace ToDoMauiBlazor.Pages
         /// </summary>
         private void ButtonAddList_OnClick()
         {
-            NewToDoList = new()
-            {
-                ToDoTasks = new()
-            };
+            NewToDoList = new();
+           
             ShowAddListPopup();
         }
 
@@ -110,36 +147,17 @@ namespace ToDoMauiBlazor.Pages
         /// </summary>
         private void ShowAddListPopup()
         {
+            ListAddPopupIsActive = true;
             DisplayListAddPopup = "display-on";
         }
-
+      
         /// <summary>
         /// Property for display of add list popup is set to off.
         /// </summary>
         private void HideAddListPopup()
         {
+            ListAddPopupIsActive = false;
             DisplayListAddPopup = "display-off";
-        }
-
-        /// <summary>
-        /// If enter is pressed inside of the add list popup input field, the new list is added to the database.
-        /// If adding was successfully the new list is selected and the table refreshed. Also the task is deselected, the task table cleared, and the detail view is cleared. Last, the popup is closed.
-        /// </summary>
-        /// <param name="e">Keyboard event, that includes the pressed key</param>
-        private void InputAddList_OnKeyUp(KeyboardEventArgs e)
-        {
-            if (e.Code != "Enter" && e.Code != "NumpadEnter") { return; }
-
-            ToDoList? newToDoList = AddListToDatabase(NewToDoList);
-
-            if (newToDoList is null) { return; }
-
-            SelectList(newToDoList);
-            RefreshLists();
-            SelectTask(null);
-            RefreshTasks(null);
-            NewToDoTask = null;
-            HideAddListPopup();
         }
 
         #endregion list_add_popup
@@ -216,6 +234,7 @@ namespace ToDoMauiBlazor.Pages
         /// </summary>
         private void ShowDeleteListPopup()
         {
+            ListDeletePopupIsActive = true;
             DisplayListDeletePopup = "display-on";
         }
 
@@ -224,6 +243,7 @@ namespace ToDoMauiBlazor.Pages
         /// </summary>
         private void HideDeleteListPopup()
         {
+            ListDeletePopupIsActive = false;
             DisplayListDeletePopup = "display-off";
         }
 
@@ -303,6 +323,7 @@ namespace ToDoMauiBlazor.Pages
         /// </summary>
         private void ShowUpdateListPopup()
         {
+            ListUpdatePopupIsActive = true;
             DisplayListUpdatePopup = "display-on";
         }
 
@@ -311,29 +332,9 @@ namespace ToDoMauiBlazor.Pages
         /// </summary>
         private void HideUpdateListPopup()
         {
+            ListUpdatePopupIsActive = false;
             UpdatedListName = string.Empty;
             DisplayListUpdatePopup = "display-off";
-        }
-
-        /// <summary>
-        /// If enter is pressed inside of the update list popup input field, the list is updated in the database.
-        /// If no list is selected, nothing happens.
-        /// If the new name is the same as the actual, nothing happens.
-        /// If update was successfully, the list table is refreshed, the updated list is selected, and the popup is closed.
-        /// </summary>
-        /// <param name="e">Keyboard event, that includes the pressed key</param>
-        private void InputUpdateList_OnKeyUp(KeyboardEventArgs e)
-        {
-            if (e.Code != "Enter" && e.Code != "NumpadEnter") { return; }
-            if (SelectedToDoList is null) { return; }
-            if (SelectedToDoList.Name == UpdatedListName) { return; }
-
-            ToDoList? updatedList = UpdateListInDatabase(SelectedToDoList, UpdatedListName);
-
-            if (updatedList is null) { return; }
-
-            SelectList(updatedList);
-            HideUpdateListPopup();
         }
 
         #endregion list_update_popup
@@ -508,6 +509,7 @@ namespace ToDoMauiBlazor.Pages
         /// </summary>
         private void ShowAddTaskPopup()
         {
+            TaskAddPopupIsActive = true;
             DisplayTaskAddPopup = "display-on";
         }
 
@@ -516,25 +518,8 @@ namespace ToDoMauiBlazor.Pages
         /// </summary>
         private void HideAddTaskPopup()
         {
+            TaskAddPopupIsActive = false;
             DisplayTaskAddPopup = "display-off";
-        }
-
-        /// <summary>
-        /// If enter is pressed inside of the add task popup input field, the new task is added to the database.
-        /// If adding was successfully the task table and view is refreshed, the new task is selected, and the popup is closed.
-        /// </summary>
-        /// <param name="e">Keyboard event, that includes the pressed key</param>
-        private void InputAddTask_OnKeyUp(KeyboardEventArgs e)
-        {
-            if (e.Code != "Enter" && e.Code != "NumpadEnter") { return; }
-
-            ToDoTask? toDoTask = AddTaskToDatabase(SelectedToDoList, NewToDoTask);
-
-            if (toDoTask is null) { return; }
-
-            SelectTask(toDoTask);
-            RefreshTasks(SelectedToDoList);
-            HideAddTaskPopup();
         }
 
         #endregion task_add_popup
@@ -618,6 +603,7 @@ namespace ToDoMauiBlazor.Pages
         /// </summary>
         private void ShowDeleteTaskPopup()
         {
+            TaskDeletePopupIsActive = true;
             DisplayTaskDeletePopup = "display-on";
         }
 
@@ -626,6 +612,7 @@ namespace ToDoMauiBlazor.Pages
         /// </summary>
         private void HideDeleteTaskPopup()
         {
+            TaskDeletePopupIsActive = false;
             DisplayTaskDeletePopup = "display-off";
         }
 
@@ -675,29 +662,29 @@ namespace ToDoMauiBlazor.Pages
             }
         }
 
-        /// <summary>
-        /// If enter is pressed inside of the task name input field, the task is updated in the list/database.
-        /// If update was successfully, the updated task is selected and detail view is updated, as long as the task is visible in table.
-        /// Otherwise no task is selected and detail view is cleared.
-        /// </summary>
-        /// <param name="e">Keyboard event, that includes the pressed key</param>
-        private void InputUpdateTaskName_OnKeyUp(KeyboardEventArgs e)
-        {
-            if (e.Code != "Enter" && e.Code != "NumpadEnter") { return; }
+        ///// <summary>
+        ///// If enter is pressed inside of the task name input field, the task is updated in the list/database.
+        ///// If update was successfully, the updated task is selected and detail view is updated, as long as the task is visible in table.
+        ///// Otherwise no task is selected and detail view is cleared.
+        ///// </summary>
+        ///// <param name="e">Keyboard event, that includes the pressed key</param>
+        //private void InputUpdateTaskName_OnKeyUp(KeyboardEventArgs e)
+        //{
+        //    if (e.Code != "Enter" && e.Code != "NumpadEnter") { return; }
 
-            ToDoTask? toDoTask = UpdateTaskInDatabase(SelectedToDoTask, NewToDoTask);
+        //    ToDoTask? toDoTask = UpdateTaskInDatabase(SelectedToDoTask, NewToDoTask);
 
-            if (toDoTask is null) { return; }
+        //    if (toDoTask is null) { return; }
 
-            if (ShowFinished && toDoTask.Finished || !toDoTask.Finished)
-            {
-                SelectTask(toDoTask);
-            }
-            else
-            {
-                SelectTask(null);
-            }
-        }
+        //    if (ShowFinished && toDoTask.Finished || !toDoTask.Finished)
+        //    {
+        //        SelectTask(toDoTask);
+        //    }
+        //    else
+        //    {
+        //        SelectTask(null);
+        //    }
+        //}
 
         /// <summary>
         /// Update the task in database.

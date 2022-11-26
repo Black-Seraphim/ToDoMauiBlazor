@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using ToDoMauiBlazor.Tools;
+@inject IJSRuntime jsRuntime
 
 @if (ToDoLists == null)
 {
@@ -36,8 +37,8 @@ else
         </main>
         <footer>
             <button @onclick="ButtonAddList_OnClick">Hinzufügen</button>
-            <button disabled="@ListIsNotSelected" @onclick="ButtonDeleteList_OnClick">Entfernen</button>
-            <button disabled="@ListIsNotSelected" @onclick="ButtonUpdateList_OnClick">Umbenennen</button>
+            <button disabled="@ListIsNotSelected" type="button" @onclick="ButtonDeleteList_OnClick">Entfernen</button>
+            <button disabled="@ListIsNotSelected" type="button" @onclick="ButtonUpdateList_OnClick">Umbenennen</button>
         </footer>
     </section>
 
@@ -48,16 +49,18 @@ else
                 <label>Liste hinzufügen</label>
                 <div @onclick="ButtonAddListClose_OnClick">&times;</div>
             </header>
-            <main>
-                @if (NewToDoList is not null)
-                {
-                    <input type="text" @bind="NewToDoList.Name" @onkeyup="@InputAddList_OnKeyUp">
-                }
-            </main>
-            <footer>
-                <button class="button-abort" @onclick="ButtonAddListAbort_OnClick">Abbrechen</button>
-                <button class="button-ok" @onclick="ButtonAddListOk_OnClick">OK</button>
-            </footer>
+            @if (NewToDoList is not null && ListAddPopupIsActive)
+            {
+                <EditForm Model="NewToDoList">
+                    <main>
+                        <InputText @ref="inputTextAddList" @bind-Value="NewToDoList.Name"></InputText>
+                    </main>
+                    <footer>
+                        <button class="button-abort" type="button" @onclick="ButtonAddListAbort_OnClick">Abbrechen</button>
+                        <button class="button-ok" type="submit" @onclick="ButtonAddListOk_OnClick">OK</button>
+                    </footer>
+                </EditForm>
+            }
         </div>
     </div>
 
@@ -68,14 +71,19 @@ else
                 <label>Liste wirklich entfernen?</label>
                 <div @onclick="ButtonDeleteListClose_OnClick">&times;</div>
             </header>
-            <main>
-                Wollen sie die ausgewählte Liste wirklich entfernen? <br>
-                Sämtlicher Inhalt geht unwiederruflich verloren!
-            </main>
-            <footer>
-                <button class="button-abort" @onclick="ButtonDeleteListAbort_OnClick">Abbrechen</button>
-                <button class="button-ok" @onclick="ButtonDeleteListOk_OnClick">OK</button>
-            </footer>
+            @if (ListDeletePopupIsActive)
+            {
+                <EditForm Model="SelectedToDoList">
+                    <main>
+                        Willst Du die ausgewählte Liste wirklich entfernen? <br>
+                        Sämtlicher Inhalt geht unwiederruflich verloren!
+                    </main>
+                    <footer>
+                        <button class="button-abort" type="button" @onclick="ButtonDeleteListAbort_OnClick">Abbrechen</button>
+                        <button class="button-ok" type="submit" @onclick="ButtonDeleteListOk_OnClick">OK</button>
+                    </footer>
+                </EditForm>
+            }
         </div>
     </div>
 
@@ -86,16 +94,18 @@ else
                 <label>Liste umbenennen</label>
                 <div @onclick="ButtonUpdateListClose_OnClick">&times;</div>
             </header>
-            <main>
-                @if (SelectedToDoList is not null)
-                {
-                    <input @bind="UpdatedListName" @onkeyup="@InputUpdateList_OnKeyUp">
-                }
-            </main>
-            <footer>
-                <button class="button-abort" @onclick="ButtonUpdateListAbort_OnClick">Abbrechen</button>
-                <button class="button-ok" @onclick="ButtonUpdateListOk_OnClick">OK</button>
-            </footer>
+            @if (SelectedToDoList is not null && ListUpdatePopupIsActive)
+            {
+                <EditForm Model="UpdatedListName">
+                    <main>
+                        <InputText @ref="inputTextUpdateList" @bind-Value="UpdatedListName"></InputText>
+                    </main>
+                    <footer>
+                        <button class="button-abort" type="button" @onclick="ButtonUpdateListAbort_OnClick">Abbrechen</button>
+                        <button class="button-ok" type="submit" @onclick="ButtonUpdateListOk_OnClick">OK</button>
+                    </footer>
+                </EditForm>
+            }
         </div>
     </div>
 
@@ -139,8 +149,8 @@ else
             </table>
         </main>
         <footer>
-            <button disabled="@ListIsNotSelected" @onclick="ButtonAddTask_OnClick">Hinzufügen</button>
-            <button disabled="@TaskIsNotSelected" @onclick="ButtonDeleteTask_OnClick">Entfernen</button>
+            <button disabled="@ListIsNotSelected" type="button" @onclick="ButtonAddTask_OnClick">Hinzufügen</button>
+            <button disabled="@TaskIsNotSelected" type="button" @onclick="ButtonDeleteTask_OnClick">Entfernen</button>
             <label class="checkbox-container">
                 <input id="show-finished" type="checkbox" @bind="ShowFinished">
                 <span class="checkbox-checkmark"></span>
@@ -156,16 +166,18 @@ else
                 <label>Aufgabe hinzufügen</label>
                 <div @onclick="ButtonAddTaskClose_OnClick">&times;</div>
             </header>
-            <main>
-                @if (NewToDoTask is not null)
-                {
-                    <input @bind="NewToDoTask.Name" @onkeyup="@InputAddTask_OnKeyUp">
-                }
-            </main>
-            <footer>
-                <button class="button-abort" @onclick="ButtonAddTaskAbort_OnClick">Abbrechen</button>
-                <button class="button-ok" @onclick="ButtonAddTaskOk_OnClick">OK</button>
-            </footer>
+            @if (NewToDoTask is not null && TaskAddPopupIsActive)
+            {
+                <EditForm Model="NewToDoTask">
+                    <main>
+                        <InputText @ref="inputTextAddTask" @bind-Value="NewToDoTask.Name"></InputText>
+                    </main>
+                    <footer>
+                        <button class="button-abort" type="button" @onclick="ButtonAddTaskAbort_OnClick">Abbrechen</button>
+                        <button class="button-ok" type="submit" @onclick="ButtonAddTaskOk_OnClick">OK</button>
+                    </footer>
+                </EditForm>
+            }
         </div>
     </div>
 
@@ -176,69 +188,68 @@ else
                 <label>Aufgabe wirklich entfernen?</label>
                 <div @onclick="ButtonDeleteTaskClose_OnClick">&times;</div>
             </header>
-            <main>
-                Wollen sie die ausgewählte Aufgabe wirklich entfernen? <br>
-                Sämtlicher Inhalt geht unwiederruflich verloren!
-            </main>
-            <footer>
-                <button class="button-abort" @onclick="ButtonDeleteTaskAbort_OnClick">Abbrechen</button>
-                <button class="button-ok" @onclick="ButtonDeleteTaskOk_OnClick">OK</button>
-            </footer>
+            @if (TaskDeletePopupIsActive)
+            {
+                <EditForm Model=SelectedToDoTask>
+                    <main>
+                        Willst Du die ausgewählte Aufgabe wirklich entfernen? <br>
+                        Sämtlicher Inhalt geht unwiederruflich verloren!
+                    </main>
+                    <footer>
+                        <button class="button-abort" type="button" @onclick="ButtonDeleteTaskAbort_OnClick">Abbrechen</button>
+                        <button class="button-ok" type="submit" @onclick="ButtonDeleteTaskOk_OnClick">OK</button>
+                    </footer>
+                </EditForm>
+            }
         </div>
     </div>
 
-
-
     <!-- Description Section -->
     <section>
-        <header>Beschreibung</header>
-        <main class="main-description">
-            <label class="input-label">Name</label>
-            @if (NewToDoTask is not null)
-            {
-                <input class="input-description" @bind="NewToDoTask.Name" @onkeyup="@InputUpdateTaskName_OnKeyUp">
-            }
-            else
-            {
+        @if (NewToDoTask is not null)
+        {
+            <EditForm Model="NewToDoTask">
+                <header>Beschreibung</header>
+                <main class="main-description">
+                    <label class="input-label">Name</label>
+                    <input class="input-description" @bind="NewToDoTask.Name">
+                    <label class="input-label">Notiz</label>
+                    <textarea @bind="NewToDoTask.Description"></textarea>
+                    <div class="dingens">
+                        <label class="checkbox-container">
+                            <input id="task-finished" type="checkbox" @bind="NewToDoTask.Finished">
+                            <span class="checkbox-checkmark"></span>
+                            <label for="task-finished">Erledigt</label>
+                        </label>
+                        <label class="date-label">@NewToDoTask.LastChanged.ToDateTimeString()</label>
+                    </div>
+                </main>
+                <footer>
+                    <button disabled="@TaskIsNotSelected" type="submit" @onclick="ButtonUpdateTask_OnClick">Änderungen übernehmen</button>
+                </footer>
+            </EditForm>
+        }
+        else
+        {
+            <header>Beschreibung</header>
+            <main class="main-description">
+                <label class="input-label">Name</label>
                 <input class="input-description" disabled>
-            }
-
-            <label class="input-label">Notiz</label>
-            @if (NewToDoTask is not null)
-            {
-                <textarea @bind="NewToDoTask.Description"></textarea>
-            }
-            else
-            {
+                <label class="input-label">Notiz</label>
                 <textarea disabled></textarea>
-            }
-
-            <div class="dingens">
-                <label class="checkbox-container">
-                    @if (NewToDoTask is not null)
-                    {
-                        <input id="task-finished" type="checkbox" @bind="NewToDoTask.Finished">
-                    }
-                    else
-                    {
+                <div class="dingens">
+                    <label class="checkbox-container">
                         <input id="task-finished" type="checkbox" disabled>
-                    }
-                    <span class="checkbox-checkmark"></span>
-                    <label for="task-finished">Erledigt</label>
-                </label>
-                @if (NewToDoTask is not null)
-                {
-                    <label class="date-label">@NewToDoTask.LastChanged.ToDateTimeString()</label>
-                }
-            </div>
-
-        </main>
-        <footer>
-            <button disabled="@TaskIsNotSelected" @onclick="ButtonUpdateTask_OnClick">Änderungen übernehmen</button>
-        </footer>
+                        <span class="checkbox-checkmark"></span>
+                        <label for="task-finished">Erledigt</label>
+                    </label>
+                </div>
+            </main>
+            <footer>
+                <button disabled="@TaskIsNotSelected" type="submit" @onclick="ButtonUpdateTask_OnClick">Änderungen übernehmen</button>
+            </footer>
+        }
     </section>
-
-
 }
 
 @code {

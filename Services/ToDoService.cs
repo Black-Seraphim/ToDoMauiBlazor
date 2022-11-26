@@ -7,7 +7,7 @@ using ToDoMauiBlazor.Tools;
 
 namespace ToDoMauiBlazor.Services
 {
-    internal class ToDoService : IToDoService
+    public class ToDoService : IToDoService
     {
         private readonly ToDoContext _context;
 
@@ -15,12 +15,7 @@ namespace ToDoMauiBlazor.Services
         {
             _context = context;
         }
-
-        /// <summary>
-        /// Stores the send ToDo-List in the database.
-        /// </summary>
-        /// <param name="list">List to store in database</param>
-        /// <returns>On success, returns the stored list, otherwise returns null.</returns>
+               
         public ToDoList? CreateList(ToDoList? list)
         {
             // check argument
@@ -44,12 +39,7 @@ namespace ToDoMauiBlazor.Services
                 return null;
             }
         }
-
-        /// <summary>
-        /// Deletes the send list from the database.
-        /// </summary>
-        /// <param name="list">List to delete from database</param>
-        /// <returns>true, if delete was successful.</returns>
+                
         public bool DeleteList(ToDoList? list)
         {
             if (list is null)
@@ -95,22 +85,13 @@ namespace ToDoMauiBlazor.Services
             }
         }
 
-        /// <summary>
-        /// Get all lists from database that includes also the tasks.
-        /// </summary>
-        /// <returns>Returns all lists</returns>
         public List<ToDoList> ReadAllLists()
         {
             return _context.ToDoLists
                 .Include(tdl => tdl.ToDoTasks)
                 .ToList();
         }
-
-        /// <summary>
-        /// Updates the send list in the database.
-        /// </summary>
-        /// <param name="list">list to update</param>
-        /// <returns>On success, returns the updated list, otherwise returns null.</returns>
+               
         public ToDoList? UpdateList(ToDoList? list)
         {
             // check argument
@@ -134,12 +115,7 @@ namespace ToDoMauiBlazor.Services
                 return null;
             }
         }
-
-        /// <summary>
-        /// Removes the task from the list and from the database.
-        /// </summary>
-        /// <param name="task">task to delete</param>
-        /// <returns>true, if delete was successful.</returns>
+               
         public bool DeleteTask(ToDoTask? task)
         {
             if (task is null)

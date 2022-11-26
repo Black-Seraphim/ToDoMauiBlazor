@@ -22,7 +22,7 @@ public static class MauiProgram
 
         builder.Services.AddDbContext<ToDoContext>();
 
-        builder.Services.AddScoped<ToDoService>();
+        builder.Services.AddScoped<IToDoService, ToDoService>();
 
         return builder.Build();
     }
